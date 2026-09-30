@@ -273,9 +273,13 @@ h2.quiet:focus .tip { display: block; }
 .poster {
   position: absolute;
   inset: 0;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   text-align: left;
+  background:
+    radial-gradient(120% 80% at 50% 100%, rgba(251, 239, 125, 0.1), transparent 55%),
+    #1a1815;
 }
 .poster-mid {
   margin: auto;

@@ -10,7 +10,7 @@ function parseVideo(url) {
   if (match) {
     return {
       kind: "iframe",
-      src: `https://www.youtube.com/embed/${match[1]}?autoplay=1&rel=0&modestbranding=1&playsinline=1`,
+      src: `https://www.youtube.com/embed/${match[1]}?autoplay=1&rel=0&modestbranding=1&playsinline=1&enablejsapi=1`,
     }
   }
   match = value.match(/vimeo\.com\/(?:video\/)?(\d+)/)
@@ -49,6 +49,7 @@ export default function App() {
   const [yearHits, setYearHits] = useState(0)
   const [load, setLoad] = useState(12)
   const inputRef = useRef(null)
+  const frameRef = useRef(null)
 
   useEffect(() => {
     const root = document.documentElement
@@ -174,8 +175,26 @@ export default function App() {
   }, [palette, filtered, active])
 
   function openCut() {
-    document.getElementById("final-cut")?.scrollIntoView({ behavior: "smooth", block: "center" })
-    if (video) setPlaying(true)
+    const frame = frameRef.current
+    if (frame && video?.kind === "iframe") {
+      const playSrc = video.src.includes("autoplay=1")
+        ? video.src
+        : `${video.src}${video.src.includes("?") ? "&" : "?"}autoplay=1`
+      if (!frame.src.includes("/embed/")) {
+        frame.src = playSrc
+      }
+      const start = () => {
+        frame.contentWindow?.postMessage(
+          '{"event":"command","func":"playVideo","args":""}',
+          "*"
+        )
+      }
+      frame.addEventListener("load", start, { once: true })
+      start()
+    } else if (frame && video?.kind === "file") {
+      frame.play?.()
+    }
+    setPlaying(true)
   }
 
   function onYears() {
@@ -187,8 +206,6 @@ export default function App() {
     }
     setYearHits(next)
   }
-
-  const showInline = playing && !theater && video
 
   return (
     <>
@@ -248,10 +265,18 @@ export default function App() {
                 emotional attachment.zip — {load}%
               </p>
             </div>
-            <div className={`frame ${showInline ? "is-live" : ""}`} id="final-cut">
-              {showInline ? (
-                <Media video={video} />
+            <div className={`frame ${playing ? "is-live" : ""}`} id="final-cut">
+              {video?.kind === "file" ? (
+                <video ref={frameRef} src={video.src} controls playsInline />
               ) : (
+                <iframe
+                  ref={frameRef}
+                  title="The final cut"
+                  allow="autoplay; fullscreen; picture-in-picture"
+                  allowFullScreen
+                />
+              )}
+              {!playing && (
                 <button className="poster" type="button" onClick={openCut}>
                   <span className="hud hud-tl">The final cut</span>
                   <span className="poster-mid">
@@ -263,7 +288,7 @@ export default function App() {
                   <span className="hud hud-br">{site.video.duration}</span>
                 </button>
               )}
-              {showInline && (
+              {playing && (
                 <button className="expand" type="button" onClick={() => setTheater(true)}>
                   Full frame
                 </button>
