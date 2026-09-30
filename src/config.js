@@ -7,11 +7,11 @@
 
 export const site = {
   colors: {
-    bg: "#070707",
-    ink: "#f4f1ea",
-    muted: "#9c978c",
+    bg: "#2a2723",
+    ink: "#f7f3ea",
+    muted: "#ddd4c6",
     yellow: "#FBEF7D",
-    line: "rgba(244, 241, 234, 0.14)",
+    line: "rgba(247, 243, 234, 0.22)",
   },
 
   logos: {

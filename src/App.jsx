@@ -49,7 +49,6 @@ export default function App() {
   const [yearHits, setYearHits] = useState(0)
   const [load, setLoad] = useState(12)
   const inputRef = useRef(null)
-  const heroRef = useRef(null)
 
   useEffect(() => {
     const root = document.documentElement
@@ -86,18 +85,6 @@ export default function App() {
       setLoad(steps[index])
     }, 850)
     return () => clearInterval(timer)
-  }, [])
-
-  useEffect(() => {
-    const onScroll = () => {
-      const node = heroRef.current
-      if (!node) return
-      const shift = Math.min(window.scrollY * 0.18, 70)
-      node.style.setProperty("--shift", `${shift}px`)
-    }
-    onScroll()
-    window.addEventListener("scroll", onScroll, { passive: true })
-    return () => window.removeEventListener("scroll", onScroll)
   }, [])
 
   useEffect(() => {
@@ -186,14 +173,9 @@ export default function App() {
     return () => window.removeEventListener("keydown", onKey)
   }, [palette, filtered, active])
 
-  function openCut(asTheater) {
+  function openCut() {
     document.getElementById("final-cut")?.scrollIntoView({ behavior: "smooth", block: "center" })
-    if (!video) return
-    if (asTheater) {
-      window.setTimeout(() => setTheater(true), 620)
-    } else {
-      setPlaying(true)
-    }
+    if (video) setPlaying(true)
   }
 
   function onYears() {
@@ -224,67 +206,54 @@ export default function App() {
       </header>
 
       <main>
-        <section className="hero" ref={heroRef}>
-          <div className="hero-copy">
-            <p className="eyebrow rise d1">
-              {site.meta.brand}
-              <span aria-hidden="true"> · </span>
-              <button className="years" type="button" onClick={onYears}>
-                {site.meta.years}
-              </button>
-              <span aria-hidden="true"> · </span>
-              {site.meta.tag}
-              {hr && <span className="hr-note">HR has been notified.</span>}
-            </p>
-            <h1 className="rise d2">
-              {site.title.map((line, index) => (
-                <span key={line} className={index === site.title.length - 1 ? "em" : undefined}>
-                  {line}
+        <section className="hero">
+          <div className="hero-grid">
+            <div className="hero-copy">
+              <p className="eyebrow rise d1">
+                {site.meta.brand}
+                <span aria-hidden="true"> · </span>
+                <button className="years" type="button" onClick={onYears}>
+                  {site.meta.years}
+                </button>
+                <span aria-hidden="true"> · </span>
+                {site.meta.tag}
+                {hr && <span className="hr-note">HR has been notified.</span>}
+              </p>
+              <h1 className="rise d2">
+                {site.title.map((line, index) => (
+                  <span key={line} className={index === site.title.length - 1 ? "em" : undefined}>
+                    {line}
+                  </span>
+                ))}
+              </h1>
+              <p className="lede rise d3">
+                {site.subtitle.map((line) => (
+                  <span key={line}>{line}</span>
+                ))}
+              </p>
+              <button className="play rise d4" type="button" onClick={openCut}>
+                <span className="play-orb" aria-hidden="true">
+                  <i />
                 </span>
-              ))}
-            </h1>
-            <p className="lede rise d3">
-              {site.subtitle.map((line) => (
-                <span key={line}>{line}</span>
-              ))}
-            </p>
-            <button className="play rise d4" type="button" onClick={() => openCut(true)}>
-              <span className="play-orb" aria-hidden="true">
-                <i />
-              </span>
-              <span>
-                Play the director’s cut <em>— {site.video.duration}</em>
-              </span>
-            </button>
-          </div>
-          <p className="loader" title="Still loading emotional attachment.zip">
-            emotional attachment.zip — {load}%
-          </p>
-        </section>
-
-        <section className="block" id="final-cut">
-          <div className="block-head reveal">
-            <p className="index">01</p>
-            <h2>The final cut</h2>
-          </div>
-          <div className="stage reveal">
-            <p className="side">
-              <span>One sitting</span>
-              <span>No chapters</span>
-              <span>9:16</span>
-            </p>
-            <div className={`frame ${showInline ? "is-live" : ""}`}>
+                <span>
+                  Play the director’s cut <em>— {site.video.duration}</em>
+                </span>
+              </button>
+              <p className="loader" title="Still loading emotional attachment.zip">
+                emotional attachment.zip — {load}%
+              </p>
+            </div>
+            <div className={`frame ${showInline ? "is-live" : ""}`} id="final-cut">
               {showInline ? (
                 <Media video={video} />
               ) : (
-                <button className="poster" type="button" onClick={() => (video ? setPlaying(true) : openCut(false))}>
-                  <span className="hud hud-tl">Laba · Final cut</span>
+                <button className="poster" type="button" onClick={openCut}>
+                  <span className="hud hud-tl">The final cut</span>
                   <span className="poster-mid">
                     <span className="play-orb lg" aria-hidden="true">
                       <i />
                     </span>
-                    <span className="poster-title">{video ? "Play" : "The reel isn’t mounted yet."}</span>
-                    {!video && <span className="poster-sub">videoUrl in src/config.js</span>}
+                    <span className="poster-title">Play</span>
                   </span>
                   <span className="hud hud-br">{site.video.duration}</span>
                 </button>
@@ -295,17 +264,12 @@ export default function App() {
                 </button>
               )}
             </div>
-            <p className="side right">
-              <span>{site.meta.brand}</span>
-              <span>{site.meta.date}</span>
-              <span>Director’s cut</span>
-            </p>
           </div>
         </section>
 
         <section className="block tight">
           <div className="block-head reveal">
-            <p className="index">02</p>
+            <p className="index">01</p>
             <h2 className="quiet" title="No KPIs were harmed in the making of this website.">
               Rough numbers
               <span className="tip">No KPIs were harmed in the making of this website.</span>
@@ -324,7 +288,7 @@ export default function App() {
         <section className="block">
           <div className="split">
             <div className="reveal">
-              <p className="index">03</p>
+              <p className="index">02</p>
               <h2>Taking with me</h2>
               <ol className="inv">
                 {site.taking.map((item, index) => (
@@ -336,7 +300,7 @@ export default function App() {
               </ol>
             </div>
             <div className="reveal">
-              <p className="index">04</p>
+              <p className="index">03</p>
               <h2>Leaving behind</h2>
               <ol className="inv">
                 {site.leaving.map((item, index) => (
@@ -352,7 +316,7 @@ export default function App() {
 
         <section className="block universe">
           <div className="reveal">
-            <p className="index">05</p>
+            <p className="index">04</p>
             <h2>The universe</h2>
             <div className="brands">
               <img src={site.logos.laba} alt="Laba" className="uni laba" />
