@@ -231,14 +231,19 @@ export default function App() {
                   <span key={line}>{line}</span>
                 ))}
               </p>
-              <button className="play rise d4" type="button" onClick={openCut}>
-                <span className="play-orb" aria-hidden="true">
-                  <i />
-                </span>
-                <span>
-                  Play the director’s cut <em>— {site.video.duration}</em>
-                </span>
-              </button>
+              <div className="actions rise d4">
+                <button className="play" type="button" onClick={openCut}>
+                  <span className="play-orb" aria-hidden="true">
+                    <i />
+                  </span>
+                  <span>
+                    Play the director’s cut <em>— {site.video.duration}</em>
+                  </span>
+                </button>
+                <a className="yt" href={site.video.url} target="_blank" rel="noreferrer">
+                  Watch on YouTube
+                </a>
+              </div>
               <p className="loader" title="Still loading emotional attachment.zip">
                 emotional attachment.zip — {load}%
               </p>
